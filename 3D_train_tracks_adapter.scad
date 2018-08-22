@@ -65,7 +65,7 @@ tw1_end = tw1_start+tw;
 tw2_start = tw1_start + between_tracks; // track 2 start width
 tw2_end = tw2_start + tw;
 th2 = 8.2; // h2 - rail_height; measured. Track height of brown side
-th1= 6.8; // h1 - rail_height; track height of blue side
+th1= 4.9; // > as measured. h1 - rail_height; track height of blue side
 // a rough-cut track w/ slope to cut from main track block
 // (after block_slope has been cut away)
 module track_slope() {
