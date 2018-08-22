@@ -18,7 +18,7 @@ https://reprap.org/forum/read.php?313,627739,714349#msg-714349
 
 h2 = 11.4;  // height of larger brown train track
 w2 = 45.83;  // width of brown track
-W = 45.83; // largest width
+W = 46; // largest width
 h1 = 7.9;  // height of blue train track
 H = 17;  // maximum height
 L = 73;  // length of overall track
