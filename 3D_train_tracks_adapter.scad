@@ -112,6 +112,48 @@ module track_slope() {
    );
 }
 
+// make small cuts into track to provide traction
+module traction_strips() {
+    slat_angle = -90*(th2 - th1)/(s1 - s2);
+    slat_repeat = 0.8;
+    slat_h = 0.3;
+    slat_w = slat_repeat/2;
+    // traction strips on slope
+    for (s = [s2 + 0.5 : slat_repeat : s1 - 0.5]) {
+        // s steps through length of track. For every %mm, we
+        // cut in a small notch
+        distance = s - s2; // starts at 0
+        percent = distance/(s1-s2);
+        height = th2 - (percent * (th2 - th1));
+        //left-track
+        translate([tw1_start + tw/2, s, height])
+            rotate([slat_angle,0,0])
+                cube(size=[tw, slat_w, slat_h*2], center=true);
+        // right-track
+        translate([tw2_start + tw/2, s, height])
+            rotate([slat_angle,0,0])
+                cube(size=[tw, slat_w, slat_h*2], center=true);
+    }
+    //traction strips wide track beginning
+    for (s = [0 + slat_w: slat_repeat : s2 - slat_w]) {
+        // left track start
+        translate([tw1_start + tw/2, s, th2])
+            cube(size=[tw, slat_w, slat_h*2], center=true);
+        // right track start
+        translate([tw2_start + tw/2, s, th2])
+            cube(size=[tw, slat_w, slat_h*2], center=true);
+    }
+    //traction strips slim track end
+    for (s = [s1 + slat_w: slat_repeat : L - slat_w]) {
+        // left track start
+        translate([tw1_start + tw/2, s, th1])
+            cube(size=[tw, slat_w, slat_h*2], center=true);
+        // right track start
+        translate([tw2_start + tw/2, s, th1])
+            cube(size=[tw, slat_w, slat_h*2], center=true);
+    }
+}
+
 // cutout the middle portion to save time&filament
 mx = 2; // margin from sides during cutout
 my = 5; // margin from ends during cutout
@@ -166,6 +208,7 @@ module hollow_train_tracks() {
         middle_cutout();  // cuts out giant middle piece
         block_slope(); // cuts slope into track shape
         track_slope(); // cuts in tracks (respecting slope)
+        traction_strips(); // cuts in traction strips
     }
 }
 
