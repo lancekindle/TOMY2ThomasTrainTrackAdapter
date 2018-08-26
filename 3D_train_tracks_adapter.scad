@@ -36,7 +36,7 @@ module block_slope() {
 polyhedron(
     points=[
      [0,s2,h2],[w2,s2,h2],[w2,s1,h1],[0,s1,h1],// bottom layer
-     [0,s2,H],[w2,s2,H],[w2,s1,H],[0,s1,H], // top layer
+     [0,s2,H+1],[w2,s2,H+1],[w2,s1,H+1],[0,s1,H+1], // top layer
     ], // bottom slope face
     faces=[
      [0,1,2,3],  // bottom 
@@ -50,9 +50,9 @@ polyhedron(
 // now we need to create two two flat cubes that take up the
 // non-sloped areas
 translate([0,0,h2])
-    cube(size=[W,s2,H-h2]);
+    cube(size=[W,s2,H-h2+1]);
 translate([0,s1,h1])
-    cube(size=[W,L-s1,H-h1]);
+    cube(size=[W,L-s1,H-h1+1]);
 }
 
 tw=8.3;  // track width
@@ -71,20 +71,20 @@ th1= 4.9; // > as measured. h1 - rail_height; track height of blue side
 module track_slope() {
     //brown track intro
     translate([tw1_start,0,th2])
-        cube(size=[tw,s2,rail_height]);
+        cube(size=[tw,s2,rail_height+1]);
     translate([tw2_start,0,th2])
-        cube(size=[tw,s2,rail_height]);
+        cube(size=[tw,s2,rail_height+1]);
     // blue track intro
     translate([tw1_start,s1,th1])
-        cube(size=[tw,L-s1,rail_height]);
+        cube(size=[tw,L-s1,rail_height+1]);
     translate([tw2_start,s1,th1])
-        cube(size=[tw,L-s1,rail_height]);
+        cube(size=[tw,L-s1,rail_height+1]);
     // 2 sloped trapezoids from one track height to the next
     // left track
    polyhedron(
     points=[
      [tw1_start,s2,th2],[tw1_end,s2,th2],[tw1_end,s1,th1],[tw1_start,s1,th1],// bottom layer
-     [tw1_start,s2,h2],[tw1_end,s2,h2],[tw1_end,s1,h1],[tw1_start,s1,h1], // top layer
+     [tw1_start,s2,h2+1],[tw1_end,s2,h2+1],[tw1_end,s1,h1+1],[tw1_start,s1,h1+1], // top layer
     ], // bottom slope face
     faces=[
      [0,1,2,3],  // bottom 
@@ -99,7 +99,7 @@ module track_slope() {
    polyhedron(
     points=[
      [tw2_start,s2,th2],[tw2_end,s2,th2],[tw2_end,s1,th1],[tw2_start,s1,th1],// bottom layer
-     [tw2_start,s2,h2],[tw2_end,s2,h2],[tw2_end,s1,h1],[tw2_start,s1,h1], // top layer
+     [tw2_start,s2,h2+1],[tw2_end,s2,h2+1],[tw2_end,s1,h1+1],[tw2_start,s1,h1+1], // top layer
     ], // bottom slope face
     faces=[
      [0,1,2,3],  // bottom 
@@ -181,8 +181,8 @@ module braces_for_hollow() {
 
 laser_cut_base_h = 3.05; // 1/8" acrylic height as measured
 module laser_cutter_base() {  // models laser-cut base
-    linear_extrude(height = laser_cut_base_h, center = false)
-        import(file = dxf_tracks_file);
+    translate([0,0,-1])
+        cube(size=[W,L,laser_cut_base_h + 1]);
 }
 
 difference() {
