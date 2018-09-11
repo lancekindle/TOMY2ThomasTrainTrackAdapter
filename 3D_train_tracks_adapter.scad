@@ -1,6 +1,7 @@
 // Lance Kindle - an adapter between two plastic train tracks.
 // a wider, taller, brown track & a shorter, slimmer blue one.
-// tracks are in same position, luckily.
+// tracks are in same position, luckily. Parameters that you can or
+// should modify are commented with "EDIT". Ctrl+f to find
 // tracks traced out from picture in inkscape in vector form
 // tested sizing by laser cutting. Then had to convert to dxf
 /* 
@@ -15,6 +16,12 @@ https://reprap.org/forum/read.php?313,627739,714349#msg-714349
 7 - Make sure the ROBO-Master spline option is unchecked, LWPOLYLINE option is checked. I keep the base units in mm to be consistent with OpenSCAD.
 7* - BASE UNITS ARE IMPORTANT! Find an option that allows you to specify mm in the Save-as-dxf dialog
 */
+// Train tracks are sized to include a laser-cut portion (with
+// tighter constraints to hold the track together). You can remove
+// that at the bottom of this script if you wish to simply 3D print,
+// though you may have to re-export joined_train_track.svg to dxf to
+// get the tighter contraints (slight modifications were made to 3D
+// print to get the pieces to slide together rather than fit firmly)
 
 h2 = 11.4;  // height of larger brown train track
 w2 = 45.83;  // width of brown track
@@ -56,8 +63,6 @@ translate([0,s1,h1])
 }
 
 tw=8.3;  // track width
-//16.66 -- between tracks
-//18.6- 1.65 -- 16.95
 between_tracks = 18.4+tw;  // width between tracks
 rail_height = 3.2; // measured as 3.2 on both blue/brown
 tw1_start = 5.5; // track starts from side
@@ -113,12 +118,15 @@ module track_slope() {
 }
 
 // make small cuts into track to provide traction
+// EDIT slat_w & slat_h depending on your printers settings. I was
+// running with a 0.2mm layer height and a .4mm nozzle
 module traction_strips() {
-    slat_angle = -90*(th2 - th1)/(s1 - s2);
-    slat_repeat = 0.8;
-    slat_h = 0.3;
-    slat_w = slat_repeat/2;
+    slat_w = 0.4;  // I think this fits nozzle
+    slat_h = 0.3;  // aka layer height + margin
+    slat_repeat = slat_w * 2;
     // traction strips on slope
+    // attempt to angle cube perpendicular to slope of track
+    slat_angle = -90*(th2 - th1)/(s1 - s2);
     for (s = [s2 + 0.5 : slat_repeat : s1 - 0.5]) {
         // s steps through length of track. For every %mm, we
         // cut in a small notch
@@ -135,7 +143,11 @@ module traction_strips() {
                 cube(size=[tw, slat_w, slat_h*2], center=true);
     }
     //traction strips wide track beginning
-    for (s = [0 + slat_w: slat_repeat : s2 - slat_w]) {
+    notch_begin = 8.5; // where notch on wide track begins-ish
+    // we use notch because protrusion fails to print slats
+    // and instead prints smaller, lower. So I got rid of slats
+    // (if it works on your slicer, EDIT notch_begin to 0);
+    for (s = [notch_begin + slat_w: slat_repeat : s2 - slat_w]) {
         // left track start
         translate([tw1_start + tw/2, s, th2])
             cube(size=[tw, slat_w, slat_h*2], center=true);
@@ -222,7 +234,8 @@ module braces_for_hollow() {
     }
 }
 
-laser_cut_base_h = 3.05; // 1/8" acrylic height as measured
+// 1/8" acrylic height as measured. EDIT with your own measurements
+laser_cut_base_h = 3.05;
 module laser_cutter_base() {  // models laser-cut base
     translate([0,0,-1])
         cube(size=[W,L,laser_cut_base_h + 1]);
@@ -233,5 +246,5 @@ difference() {
         hollow_train_tracks();
         braces_for_hollow();
     }
-    laser_cutter_base();  // subtraces expected laser-cut base from bottom of model. 3D print will place this "hovering" model on ground
+    laser_cutter_base();  // subtraces expected laser-cut base from bottom of model. 3D print will place this "hovering" model on ground. EDIT / comment this out to fully 3D print
 }
